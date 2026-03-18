@@ -22,26 +22,59 @@ A web-based interface for extracting knowledge graphs and structured entities fr
 
 ## Installation
 
-1. Make sure you're in the docling-graph virtual environment:
+1. **Clone the repository and navigate to the project:**
 ```bash
-cd /Users/gliozzo/Code/docling-graph
-source .venv/bin/activate
+cd /path/to/docling-graph
 ```
 
-2. Install required packages (if not already installed):
+2. **Install all dependencies using uv:**
 ```bash
-uv pip install fastapi uvicorn[standard] python-multipart agentics-py pandas docling
+uv sync
 ```
 
-3. Configure environment variables (optional):
+This will automatically:
+- Create a virtual environment (if not exists)
+- Install all required packages including FastAPI, Uvicorn, Agentics, Docling, and Pandas
+- Set up development tools
+
+3. **Configure environment variables:**
+
+Copy the example environment file:
 ```bash
-# Copy the example environment file
 cp agentics_kg/.env.example agentics_kg/.env
-
-# Edit .env to set your preferences
-# DOCLING_AGENTICS_UPLOAD_DIR=/tmp/docling_agentics  # Default upload directory
-# GOOGLE_API_KEY=your-api-key-here
 ```
+
+Edit `.env` to configure your LLM provider and settings:
+
+```bash
+# Upload Directory (optional)
+DOCLING_AGENTICS_UPLOAD_DIR=/tmp/docling_agentics
+
+# LLM Provider Configuration (choose one or more)
+
+# Option 1: Google Gemini (recommended)
+GOOGLE_API_KEY=your-google-api-key-here
+# Get your key at: https://makersuite.google.com/app/apikey
+
+# Option 2: OpenAI
+OPENAI_API_KEY=your-openai-api-key-here
+# Get your key at: https://platform.openai.com/api-keys
+
+# Option 3: Anthropic Claude
+ANTHROPIC_API_KEY=your-anthropic-api-key-here
+# Get your key at: https://console.anthropic.com/
+
+# Option 4: Azure OpenAI
+AZURE_API_KEY=your-azure-api-key
+AZURE_API_BASE=https://your-resource.openai.azure.com
+AZURE_API_VERSION=2024-02-15-preview
+
+# Default Model (optional, defaults to gemini/gemini-1.5-flash)
+# Examples: gpt-4, claude-3-opus-20240229, gemini/gemini-1.5-pro
+DEFAULT_MODEL=gemini/gemini-1.5-flash
+```
+
+**Note:** The application uses LiteLLM which supports 100+ LLM providers. You only need to configure one provider to get started.
 
 ## Running the Application
 
