@@ -1287,34 +1287,13 @@ function loadTemplate(templateName) {
                 { name: 'keyword', type: 'str', description: 'A keyword or key term', required: false }
             ]
         },
-        'Person': {
-            instructions: 'Extract information about people mentioned in the document',
+        'Entity': {
+            instructions: 'Extract named entities from the document (people, organizations, locations, concepts, etc.)',
             asList: true,
             fields: [
-                { name: 'first_name', type: 'str', description: 'First name of the person', required: false },
-                { name: 'last_name', type: 'str', description: 'Last name of the person', required: false },
-                { name: 'date_of_birth', type: 'str', description: 'Date of birth (if mentioned)', required: false },
-                { name: 'nationality', type: 'str', description: 'Nationality or citizenship', required: false },
-                { name: 'job_role', type: 'str', description: 'Job title or professional role', required: false }
-            ]
-        },
-        'Location': {
-            instructions: 'Extract location information from the document',
-            asList: true,
-            fields: [
-                { name: 'name', type: 'str', description: 'Name of the location', required: false },
-                { name: 'type', type: 'str', description: 'Type of location (city, country, region, etc.)', required: false },
-                { name: 'country', type: 'str', description: 'Country where the location is situated', required: false }
-            ]
-        },
-        'Organization': {
-            instructions: 'Extract information about organizations mentioned in the document',
-            asList: true,
-            fields: [
-                { name: 'name', type: 'str', description: 'Name of the organization', required: false },
-                { name: 'type', type: 'str', description: 'Type of organization (company, NGO, government, etc.)', required: false },
-                { name: 'industry', type: 'str', description: 'Industry or sector', required: false },
-                { name: 'location', type: 'str', description: 'Headquarters or main location', required: false }
+                { name: 'name', type: 'str', description: 'Name of the entity', required: false },
+                { name: 'type', type: 'str', description: 'Type of entity (e.g., Person, Organization, Location, Concept, Event)', required: false },
+                { name: 'subtype', type: 'str', description: 'More specific subtype (e.g., Company, City, Technology, Conference)', required: false }
             ]
         }
     };
