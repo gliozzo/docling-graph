@@ -29,7 +29,7 @@ authors = [
   { name = "Guilhaume Leroy Meline", email = "guilhaume@fr.ibm.com" },
   { name = "Peter Staar", email = "taa@zurich.ibm.com" },
 ]
-requires-python = ">=3.10,<4.0"
+requires-python = ">=3.11,<3.13"
 dependencies = [
     "docling[vlm]>=2.70.0,<3.0.0",
     "docling-core[chunking, chunking-openai]>=2.50.0,<3.0.0",
@@ -41,6 +41,14 @@ dependencies = [
     "litellm>=1.0.0,<2.0.0",
     "pyyaml>=6.0,<7.0",
     "aiofiles>=24.0.0,<26.0.0",
+    "agentics-py>=0.3.3",
+    "tqdm==4.66.5",
+    "mpire==2.10.2",
+    # Web server dependencies for agentics_kg
+    "fastapi>=0.115.0,<1.0.0",
+    "uvicorn[standard]>=0.32.0,<1.0.0",
+    "python-multipart>=0.0.20,<1.0.0",
+    "pandas>=2.0.0,<3.0.0",
 ]
 
 [project.urls]
