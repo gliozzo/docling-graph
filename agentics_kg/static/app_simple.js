@@ -1551,17 +1551,31 @@ function renderSchemaResultsTable(results) {
     });
     const keys = Array.from(allKeys);
     
+    // Store results for sorting
+    window.schemaTableData = {
+        results: results,
+        keys: keys,
+        sortColumn: null,
+        sortDirection: 'asc'
+    };
+    
     let html = `
         <div class="table-responsive">
-            <table class="table table-striped table-hover">
+            <table class="table table-striped table-hover" id="schemaResultsTable">
                 <thead class="table-light">
                     <tr>
-                        <th>#</th>
-                        ${keys.map(key => `<th>${key}</th>`).join('')}
+                        <th style="cursor: pointer;" onclick="sortSchemaTable(-1)">
+                            # <span id="sort-icon--1"></span>
+                        </th>
+                        ${keys.map((key, idx) => `
+                            <th style="cursor: pointer;" onclick="sortSchemaTable(${idx})" title="Click to sort">
+                                ${key} <span id="sort-icon-${idx}"></span>
+                            </th>
+                        `).join('')}
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="schemaResultsTableBody">
     `;
     
     results.forEach((result, idx) => {
@@ -1616,6 +1630,115 @@ function renderSchemaResultsTable(results) {
     `;
     
     return html;
+}
+
+function sortSchemaTable(columnIndex) {
+    const data = window.schemaTableData;
+    if (!data) return;
+    
+    const { results, keys } = data;
+    
+    // Toggle sort direction if clicking same column
+    if (data.sortColumn === columnIndex) {
+        data.sortDirection = data.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+        data.sortColumn = columnIndex;
+        data.sortDirection = 'asc';
+    }
+    
+    // Sort the results
+    const sortedResults = [...results].sort((a, b) => {
+        let aVal, bVal;
+        
+        if (columnIndex === -1) {
+            // Sort by row number (original index)
+            aVal = results.indexOf(a);
+            bVal = results.indexOf(b);
+        } else {
+            const key = keys[columnIndex];
+            aVal = a[key];
+            bVal = b[key];
+        }
+        
+        // Handle null/undefined
+        if (aVal === null || aVal === undefined) return 1;
+        if (bVal === null || bVal === undefined) return -1;
+        
+        // Handle arrays
+        if (Array.isArray(aVal)) aVal = aVal.length;
+        if (Array.isArray(bVal)) bVal = bVal.length;
+        
+        // Handle objects
+        if (typeof aVal === 'object') aVal = JSON.stringify(aVal);
+        if (typeof bVal === 'object') bVal = JSON.stringify(bVal);
+        
+        // Compare
+        if (aVal < bVal) return data.sortDirection === 'asc' ? -1 : 1;
+        if (aVal > bVal) return data.sortDirection === 'asc' ? 1 : -1;
+        return 0;
+    });
+    
+    // Update the table body
+    const tbody = document.getElementById('schemaResultsTableBody');
+    if (!tbody) return;
+    
+    let html = '';
+    sortedResults.forEach((result, idx) => {
+        html += `<tr><td>${idx + 1}</td>`;
+        
+        // Store entity value for the action button
+        let entityValue = null;
+        
+        keys.forEach(key => {
+            const value = result[key];
+            let displayValue = '';
+            
+            if (value === null || value === undefined) {
+                displayValue = '<span class="text-muted">null</span>';
+            } else if (Array.isArray(value)) {
+                displayValue = `<span class="badge bg-info">${value.length} items</span> ${JSON.stringify(value)}`;
+            } else if (typeof value === 'object') {
+                displayValue = `<details><summary>Object</summary><pre>${JSON.stringify(value, null, 2)}</pre></details>`;
+            } else {
+                displayValue = String(value);
+                // Store the first non-null string value as potential entity
+                if (!entityValue && typeof value === 'string' && value.trim()) {
+                    entityValue = value;
+                }
+            }
+            
+            html += `<td>${displayValue}</td>`;
+        });
+        
+        // Add action button column
+        if (entityValue) {
+            html += `
+                <td>
+                    <button class="btn btn-sm btn-primary"
+                            onclick="generateInfoboxForEntity('${entityValue.replace(/'/g, "\\'")}')"
+                            title="Generate infobox for ${entityValue}">
+                        🔍 Generate Infobox
+                    </button>
+                </td>
+            `;
+        } else {
+            html += `<td><span class="text-muted">-</span></td>`;
+        }
+        
+        html += `</tr>`;
+    });
+    
+    tbody.innerHTML = html;
+    
+    // Update sort icons
+    document.querySelectorAll('[id^="sort-icon-"]').forEach(el => {
+        el.textContent = '';
+    });
+    
+    const icon = document.getElementById(`sort-icon-${columnIndex}`);
+    if (icon) {
+        icon.textContent = data.sortDirection === 'asc' ? ' ▲' : ' ▼';
+    }
 }
 
 function downloadSchemaResults(format) {
